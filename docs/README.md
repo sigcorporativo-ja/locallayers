@@ -24,3 +24,8 @@ var mp = new M.plugin.LocalLayers();
 myMap.addPlugin(mp);
 });
 ```  
+
+## Dependencias
+"dependencies": {
+    "shpjs": "^3.4.2"
+  }

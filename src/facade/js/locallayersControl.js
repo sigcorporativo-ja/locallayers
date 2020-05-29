@@ -147,7 +147,7 @@ export class LocalLayersControl extends M.Control {
           // Por si se trata de un conjunto de shapes, recojo el geojson en un array y junto las features
           let geojsonArray = [].concat(shp.parseZip(fileReader.result));
           for (let geojson of geojsonArray) {
-            let localFeatures = this.getImpl().loadGeoJSONLayer(this.inputName_.value, geojson);
+            let localFeatures = this.getImpl().loadGeoJSONLayer(this.inputName_.value, geojson,this.inputCenter_.checked);
             if (localFeatures) {
               features = features.concat(localFeatures);
             }
@@ -158,7 +158,7 @@ export class LocalLayersControl extends M.Control {
             type: 'text/plain'
           }));
           features = this.getImpl().loadKMLLayer(this.inputName_.value, url); */
-          features = this.getImpl().loadKMLLayer(this.inputName_.value, fileReader.result, this.inputStyle_.checked);
+          features = this.getImpl().loadKMLLayer(this.inputName_.value, fileReader.result, this.inputStyle_.checked, this.inputCenter_.checked);
           if (features.length) {
 
           }
@@ -168,20 +168,13 @@ export class LocalLayersControl extends M.Control {
 
           }
         } else if (fileExt === 'geojson') {
-          features = this.getImpl().loadGeoJSONLayer(this.inputName_.value, fileReader.result);
+          features = this.getImpl().loadGeoJSONLayer(this.inputName_.value, fileReader.result, this.inputCenter_.checked);
         } else { // No debería entrar aquí nunca
           M.dialog.error('Error al cargar el fichero');
           return;
         }
-        if (!features.length) {
-          M.dialog.info('No se han detectado geometrías en este fichero');
-        } else {
-          if (this.inputCenter_.checked) {
-            this.getImpl().centerFeatures(features);
-          }
-        }
+
       } catch (error) {
-        console.log(error);
         M.dialog.error('Error al cargar el fichero. Compruebe que se trata del fichero correcto');
       }
     });

@@ -62,14 +62,21 @@ export class LocalLayersControl extends M.impl.Control {
    * @param {any} source
    * @memberof LocalLayersControl
    */
-  loadGeoJSONLayer(layerName, source) {
+  loadGeoJSONLayer(layerName, source, zoom) {
     let layer = new M.layer.GeoJSON({
       name: layerName,
       source: source
     });
     layer.options.origen = 'Local';
+    
+    let this_ = this;
+    layer.on(M.evt.LOAD, function(){
+       if(zoom){
+	this_.facadeMap_.setMaxExtent(layer.getFeaturesExtent());
+       }
+    });
     this.facadeMap_.addLayers(layer);
-    return layer.getFeatures();
+    
   }
 
   /**
@@ -80,7 +87,7 @@ export class LocalLayersControl extends M.impl.Control {
    * @returns
    * @memberof LocalLayersControl
    */
-  loadKMLLayer(layerName, source, extractStyles) {
+  loadKMLLayer(layerName, source, extractStyles, zoom) {
     /*     let layer = new M.layer.KML({
           name: layerName,
           url: url,
@@ -92,7 +99,7 @@ export class LocalLayersControl extends M.impl.Control {
     // FIXME: Es necesario usar la libreria base para leer las features y crear a partir de ellas una capa GeoJSON
     let features = new ol.format.KML({ extractStyles: extractStyles }).readFeatures(source, { 'featureProjection': this.facadeMap_.getProjection().code });
     features = this.convertToMFeature_(features);
-    this.createLayer_(layerName, features);
+    this.createLayer_(layerName, features, zoom);
     return features;
   }
 
@@ -112,14 +119,23 @@ export class LocalLayersControl extends M.impl.Control {
     return features;
   }
 
-  createLayer_(layerName, features) {
+  createLayer_(layerName, features, zoom) {
     let layer = new M.layer.Vector({
       'name': layerName
     }, {
         'displayInLayerSwitcher': true
       });
     layer.addFeatures(features);
-    layer.options.origen = 'Local';
+    //layer.options.origen = 'Local';
+    layer.options = {
+	origen: 'Local'
+    };
+    let this_=this;
+    layer.on(M.evt.LOAD, function(){
+       if(zoom){
+	this_.facadeMap_.setMaxExtent(layer.getFeaturesExtent());
+       }
+    });
     this.facadeMap_.addLayers(layer);
   }
 
